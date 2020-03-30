@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  enlighten-api:
+    forum: 
+      context: .
+    command: node src/server.js
+    volumes:
+      - type: volume
+        source: app
+        target: /app
+    environment:
+      - NODE_ENV=production
+volumes:
+  app:

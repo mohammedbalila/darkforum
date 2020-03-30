@@ -1,0 +1,19 @@
+version: "2"
+services:
+  forum-api:
+    build: .
+    environment:
+      - JWT_KEY=bA2xcjpf8y5aSUFsNB2qN5yymUBSs6es3qHoFpGkec75RCeBb8cpKauGefw5qy4
+      - DB_URI=mongodb://172.17.0.2:27017/forum
+      - TEST_DB_URI=mongodb://172.17.0.2:27017/forum_test
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
