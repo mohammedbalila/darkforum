@@ -4,7 +4,9 @@ const {
   findAllCategories,
   createCategory,
   findCategory,
+  findCategoryBySlug,
   updateCategory,
+  getForums,
   deleteCategory,
 } = require('../controllers/category');
 
@@ -15,10 +17,14 @@ router
   .get(findAllCategories)
   .post(createCategory);
 
+router.get('/slug/:slug', findCategoryBySlug);
+
 router
   .route('/:id')
   .get(findCategory)
   .put(updateCategory)
   .delete(deleteCategory);
+
+router.get('/:categoryId/forums', getForums);
 
 module.exports = router;

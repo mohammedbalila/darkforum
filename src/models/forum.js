@@ -1,4 +1,3 @@
-
 const { Schema, model } = require('mongoose');
 
 const ForumSchema = new Schema({
@@ -41,7 +40,19 @@ const ForumSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
+});
 
+ForumSchema.set('toObject', { virtuals: true });
+ForumSchema.set('toJSON', { virtuals: true });
+/* eslint-disable */
+ForumSchema.virtual('threadsCount').get(function() {
+  const threads = this.threads;
+  
+  if (threads) {
+    return threads.length;
+  }
+
+  return 0;
 });
 
 ForumSchema.index({ slug: 1 });

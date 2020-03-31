@@ -34,10 +34,45 @@ module.exports = {
     const { id: _id } = req.params;
     try {
       const category = await Category.findOne({ _id });
+      const forums = await Forum.find(
+        { category: _id },
+        {
+          name: 1,
+          slug: 1,
+        },
+      )
+        .limit(3)
+        .sort('publishedAt');
+
       if (!category) {
         return res.status(404).json({ message: 'Category was not found' });
       }
-      return res.json({ category });
+      // category.forums = forums;
+      return res.json({ category: { ...category.toJSON(), forums } });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  findCategoryBySlug: async (req, res, next) => {
+    const { slug } = req.params;
+    try {
+      const category = await Category.findOne({ slug });
+      const forums = await Forum.find(
+        { category: category.id },
+        {
+          name: 1,
+          slug: 1,
+        },
+      )
+        .limit(3)
+        .sort('publishedAt');
+
+      if (!category) {
+        return res.status(404).json({ message: 'Category was not found' });
+      }
+      // category.forums = forums;
+      return res.json({ category: { ...category.toJSON(), forums } });
     } catch (error) {
       return next(error);
     }
@@ -72,25 +107,25 @@ module.exports = {
     const { id } = req.params;
     const { limit, offset } = req.query;
     try {
-      const query = Forum.find({ category: id },
+      const query = Forum.find(
+        { category: id },
         {
           title: 1,
           slug: 1,
           author: 1,
           name: 1,
           publishedAt: 1,
-        })
-        .populate('author', '_id username', 'User');
+        },
+      )
+        .populate('author', '_id username', 'User')
+        .sort('publishedAt');
 
       if (limit && offset) {
-        const forums = await query
-          .limit(+limit)
-          .skip(+offset);
+        const forums = await query.limit(+limit).skip(+offset);
         return res.json({ forums });
       }
 
-      const forums = await query
-        .limit(10);
+      const forums = await query.limit(10);
       return res.json({ forums });
     } catch (error) {
       return next(error);

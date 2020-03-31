@@ -4,6 +4,7 @@ const {
   createForum,
   findAllForums,
   findForum,
+  getThreads,
   deleteForum,
 } = require('../controllers/forum');
 
@@ -18,5 +19,7 @@ router
   .route('/:id')
   .get(findForum)
   .delete(passport.authenticate('jwt', { session: false }), deleteForum);
+
+router.get('/:forumId/forums', getThreads);
 
 module.exports = router;
