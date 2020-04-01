@@ -4,6 +4,7 @@ const {
   createForum,
   findAllForums,
   findForum,
+  findForumBySlug,
   getThreads,
   deleteForum,
 } = require('../controllers/forum');
@@ -14,6 +15,8 @@ router
   .route('/')
   .get(findAllForums)
   .post(passport.authenticate('jwt', { session: false }), createForum);
+
+router.get('/slug/:slug', findForumBySlug);
 
 router
   .route('/:id')

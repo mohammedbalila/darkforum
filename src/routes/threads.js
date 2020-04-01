@@ -4,6 +4,7 @@ const {
   createThread,
   findAllThreads,
   findThread,
+  findThreadBySlug,
   getPosts,
   deleteThread,
 } = require('../controllers/thread');
@@ -14,6 +15,8 @@ router
   .route('/')
   .get(findAllThreads)
   .post(passport.authenticate('jwt', { session: false }), createThread);
+
+router.get('/slug/:slug', findThreadBySlug);
 
 router
   .route('/:id')

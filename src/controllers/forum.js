@@ -53,9 +53,17 @@ module.exports = {
   },
 
   findForumBySlug: async (req, res, next) => {
-    const { slug } = req.query;
+    const { slug } = req.params;
     try {
-      const forum = await Forum.findOne({ slug });
+      const forum = await Forum.findOne({ slug })
+        .populate('author', '_id username', 'user')
+        .populate({
+          path: 'threads',
+          select: '_id title slug author',
+          model: 'Thread',
+          populate: { path: 'author', select: 'username', model: 'user' },
+        });
+      // .populate('threads', '_id title slug', 'Thread');
       if (!forum) {
         return res.status(404).json('Forum not found');
       }

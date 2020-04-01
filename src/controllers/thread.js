@@ -25,6 +25,27 @@ module.exports = {
     }
   },
 
+  findThreadBySlug: async (req, res, next) => {
+    const { slug } = req.params;
+    try {
+      const thread = await Thread.findOne({ slug })
+        .populate('author', '_id username', 'user')
+        .populate({
+          path: 'posts',
+          select: 'text author',
+          model: 'Post',
+          populate: { path: 'author', select: 'username', model: 'user' },
+        });
+      // .populate('threads', '_id title slug', 'Thread');
+      if (!thread) {
+        return res.status(404).json('Thread not found');
+      }
+      return res.json({ thread });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   findAllThreads: async (req, res, next) => {
     const { limit, offset, forum } = req.query;
     try {
