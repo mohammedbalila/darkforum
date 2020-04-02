@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const { Forum, Thread } = require('../models');
+const { redisGet, redisSet } = require('../config/cache');
 
 // eslint-disable-next-line import/prefer-default-export
 module.exports = {
@@ -25,14 +26,22 @@ module.exports = {
   },
 
   findAllForums: async (req, res, next) => {
-    const { limit, offset } = req.query;
+    const { limit = '10', offset = '0' } = req.query;
+    const key = `forums_${limit}_${offset}`;
+
     try {
-      const query = Forum.find();
-      if (limit && offset) {
-        const forums = await query.limit(+limit).skip(+offset);
+      const cacheValue = await redisGet(key);
+
+      if (cacheValue) {
+        const forums = JSON.parse(cacheValue);
         return res.json({ forums });
       }
-      const forums = await query.limit(10);
+
+      const query = Forum.find();
+
+      const forums = await query.limit(+limit).skip(+offset);
+
+      redisSet(key, 18000, JSON.stringify(forums));
       return res.json({ forums });
     } catch (error) {
       return next(error);

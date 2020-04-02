@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { uuid } = require('uuidv4');
 const _ = require('lodash');
 const { User } = require('../models');
+const { redisGet, redisSet } = require('../config/cache');
 const { confirm: confirmEmail } = require('../config/mail');
 
 // eslint-disable-next-line import/prefer-default-export
@@ -104,15 +105,24 @@ module.exports = {
   },
 
   findAll: async (req, res, next) => {
-    const { limit, offset } = req.query;
+    const { limit = '10', offset = '0' } = req.query;
+    const key = `users_${limit}_${offset}`;
     try {
-      if (limit && offset) {
-        const users = await User.find({}, { password: 0, hash: 0, email: 0 })
-          .limit(+limit)
-          .skip(+offset);
+      const cacheValue = await redisGet(key);
+
+      if (cacheValue) {
+        const users = JSON.parse(cacheValue);
         return res.json({ users });
       }
-      const users = await User.find({}, { password: 0, hash: 0, email: 0 });
+
+      const users = await User.find(
+        {},
+        { fullName: 1, username: 1, lastVisitAt: 1 },
+      )
+        .limit(+limit)
+        .skip(+offset);
+
+      redisSet(key, 18000, JSON.stringify(users));
       return res.json({ users });
     } catch (error) {
       return next(error);
