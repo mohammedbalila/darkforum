@@ -1,4 +1,3 @@
-
 const _ = require('lodash');
 const { Post } = require('../models');
 
@@ -21,13 +20,10 @@ module.exports = {
     try {
       const query = Post.find({ thread });
       if (limit && offset) {
-        const posts = await query
-          .limit(+limit)
-          .skip(+offset);
+        const posts = await query.limit(+limit).skip(+offset);
         return res.json({ posts });
       }
-      const posts = await query
-        .limit(10);
+      const posts = await query.limit(10);
       return res.json({ posts });
     } catch (error) {
       return next(error);
@@ -35,11 +31,14 @@ module.exports = {
   },
 
   getPostsByUser: async (req, res, next) => {
-    const { userId: author } = req.params;
+    const { username } = req.params;
     try {
-      const books = await Post.find({ author })
-        .populate('author', '_id firstName lastName', 'User');
-      return res.json({ books });
+      const posts = await Post.find({ 'author.username': username }).populate(
+        'author',
+        '_id firstName lastName username',
+        'User',
+      );
+      return res.json({ posts });
     } catch (error) {
       return next(error);
     }
@@ -75,5 +74,4 @@ module.exports = {
       return next(error);
     }
   },
-
 };

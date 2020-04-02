@@ -62,6 +62,18 @@ module.exports = {
     }
   },
 
+  getThreadsByUser: async (req, res, next) => {
+    const { username } = req.params;
+    try {
+      const threads = await Thread.find({
+        'author.username': username,
+      }).populate('author', '_id firstName lastName username', 'User');
+      return res.json({ threads });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   findThread: async (req, res, next) => {
     const { id } = req.params;
     try {

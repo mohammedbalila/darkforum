@@ -142,6 +142,19 @@ module.exports = {
     }
   },
 
+  findByUsername: async (req, res, next) => {
+    const { username } = req.params;
+    try {
+      const user = await User.findOne({ username }, { password: 0, hash: 0 });
+      if (!user) {
+        return res.status(404).json({ message: 'User was not found' });
+      }
+      return res.json({ user });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   updateOne: async (req, res, next) => {
     const fields = _.pick(req.body, ['firstName', 'lastName', 'email']);
     const validatorErrors = validationResult(req);

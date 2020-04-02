@@ -4,6 +4,7 @@ const {
   createPost,
   findAllPosts,
   findPost,
+  getPostsByUser,
   updatePost,
   deletePost,
 } = require('../controllers/post');
@@ -14,6 +15,8 @@ router
   .route('/')
   .get(findAllPosts)
   .post(passport.authenticate('jwt', { session: false }), createPost);
+
+router.get('/user/:username', getPostsByUser);
 
 router
   .route('/:id')

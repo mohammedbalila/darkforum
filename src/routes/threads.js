@@ -5,6 +5,7 @@ const {
   findAllThreads,
   findThread,
   findThreadBySlug,
+  getThreadsByUser,
   getPosts,
   deleteThread,
 } = require('../controllers/thread');
@@ -17,12 +18,12 @@ router
   .post(passport.authenticate('jwt', { session: false }), createThread);
 
 router.get('/slug/:slug', findThreadBySlug);
+router.get('/user/:username', getThreadsByUser);
+router.get('/:threadId/posts', getPosts);
 
 router
   .route('/:id')
   .get(findThread)
   .delete(passport.authenticate('jwt', { session: false }), deleteThread);
-
-router.get('/:threadId/posts', getPosts);
 
 module.exports = router;
