@@ -1,4 +1,3 @@
-
 const { Schema, model } = require('mongoose');
 
 const ThreadSchema = new Schema({
@@ -22,6 +21,10 @@ const ThreadSchema = new Schema({
     required: true,
   },
 
+  text: {
+    type: String,
+  },
+
   contributors: {
     type: [Schema.Types.ObjectId],
     ref: 'User',
@@ -36,8 +39,6 @@ const ThreadSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
-
-
 });
 
 ThreadSchema.index({ slug: 1 });

@@ -5,13 +5,10 @@ const { Thread, Post, Forum } = require('../models');
 module.exports = {
   createThread: async (req, res, next) => {
     try {
-      const fields = _.pick(req.body, ['forum', 'title']);
+      const fields = _.pick(req.body, ['forum', 'title', 'text']);
       const thread = new Thread(fields);
       thread.author = req.user.id;
-      thread.slug = thread.title
-        .toLowerCase()
-        .split(' ')
-        .join('-');
+      thread.slug = thread.title.toLowerCase().split(' ').join('-');
       await thread.save();
       await Forum.updateOne(
         { _id: thread.forum },

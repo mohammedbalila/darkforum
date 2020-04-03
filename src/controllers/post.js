@@ -23,7 +23,9 @@ module.exports = {
         const posts = await query.limit(+limit).skip(+offset);
         return res.json({ posts });
       }
-      const posts = await query.limit(10);
+      const posts = await query
+        .limit(10)
+        .populate('author', 'username', 'user');
       return res.json({ posts });
     } catch (error) {
       return next(error);
